@@ -26,11 +26,16 @@ jobs:
             if [ ! -d projects ]; then
               mkdir projects
             fi
-            echo "Project does not exist"
+            if [ ! -d projects/$project_name ]; then
+              echo "Project does not exist: creating folder"
+              mkdir projects/$project_name
+            fi
             echo "PR_NEEDED=true" >> $GITHUB_OUTPUT
             echo "PROJECT_NAME=$project_name" >> $GITHUB_OUTPUT
             # creadte a new file with the project name.md and the issue body as content
-            echo "${{ github.event.issue.body }}" > projects/$project_name.md
+            echo "${{ github.event.issue.body }}" > projects/$project_name/README.md
+            mkdir projects/$project_name/src
+            echo "Add your code here" > projects/$project_name/src/README.md
           else
             echo "PR not needed"
             echo "PR_NEEDED=false" >> $GITHUB_OUTPUT
