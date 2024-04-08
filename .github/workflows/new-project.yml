@@ -43,4 +43,4 @@ jobs:
             commit-message: adding new project
             title: "Add ${{ steps.check-issue.outputs.PROJECT_NAME }}"
             body: "Add project to the projects folder. Fixes #${{ github.event.issue.number }}"
-            branch: new-project
+            branch: new-project-issue-${{ github.event.issue.number }}
