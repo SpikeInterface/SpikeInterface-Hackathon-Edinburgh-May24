@@ -14,8 +14,8 @@ jobs:
       - name: Check issue
         id: check-issue
         run: |
-          if [[ ${{ github.event.issue.title }} == "[NEW PROJECT]:"* ]]; then
-            title=${{ github.event.issue.title }}
+          if [[ "${{ github.event.issue.title }}" == "[NEW PROJECT]:"* ]]; then
+            title="${{ github.event.issue.title }}"
             # remove the [NEW PROJECT]: part
             project_name=${title#": "}
             project_name=${project_name// /_} # replace spaces with underscores
@@ -27,6 +27,7 @@ jobs:
             fi
             echo "Project does not exist"
             echo "PR_NEEDED=true" >> $GITHUB_OUTPUT
+            echo "PROJECT_NAME=$project_name" >> $GITHUB_OUTPUT
             # creadte a new file with the project name.md and the issue body as content
             echo "${{ github.event.issue.body }}" > projects/$project_name.md
           else
@@ -39,6 +40,6 @@ jobs:
         if : ${{ steps.check-issue.outputs.PR_NEEDED == 'true' }}
         with:
             commit-message: adding new project
-            title: ${{ github.event.issue.title }}
+            title: "Add ${{ steps.check-issue.outputs.PROJECT_NAME }}"
             body: "Add project to the projects folder. Fixes #${{ github.event.issue.number }}"
             branch: main
