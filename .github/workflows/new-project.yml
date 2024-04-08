@@ -1,11 +1,11 @@
-name: Black formatting
+name: New Project from Issue
 
 on:
   issues:
-    types: opened
+    types: [opened, edited, reopened]
 
 jobs:
-  lint:
+  new-project-from-issue:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout repository
@@ -14,7 +14,6 @@ jobs:
       - name: Check issue
         id: check-issue
         run: |
-          cd projects
           if [[ ${{ github.event.issue.title }} == "[NEW PROJECT]:"* ]]; then
             title=${{ github.event.issue.title }}
             # remove the [NEW PROJECT]: part
@@ -22,16 +21,14 @@ jobs:
             project_name=${project_name// /_} # replace spaces with underscores
             # make all lower cases
             project_name=$(echo $project_name | tr '[:upper:]' '[:lower:]')
-            # check if the project already exists
-            if [ -d $project_name ]; then
-              echo "Project already exists"
-              echo "PR_NEEDED=false" >> $GITHUB_OUTPUT
-              # creadte a new file with the project name.md and the issue body as content
-              echo "${{ github.event.issue.body }}" > $project_name/$project_name.md
-            else
-              echo "Project does not exist"
-              echo "PR_NEEDED=true" >> $GITHUB_OUTPUT
+            # check if the projects folder doesn't exist and create it if needed
+            if [ ! -d projects ]; then
+              mkdir projects
             fi
+            echo "Project does not exist"
+            echo "PR_NEEDED=true" >> $GITHUB_OUTPUT
+            # creadte a new file with the project name.md and the issue body as content
+            echo "${{ github.event.issue.body }}" > projects/$project_name.md
           else
             echo "PR not needed"
             echo "PR_NEEDED=false" >> $GITHUB_OUTPUT
