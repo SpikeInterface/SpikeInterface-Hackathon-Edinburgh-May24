@@ -16,8 +16,9 @@ jobs:
         run: |
           if [[ "${{ github.event.issue.title }}" == "[NEW PROJECT]:"* ]]; then
             title="${{ github.event.issue.title }}"
-            # remove the [NEW PROJECT]: part
-            project_name=${title#": "}
+            # create a variable project_name and remove the [NEW PROJECT]: from the title
+            project_name=${title:15}
+            echo "PROJECT_NAME=$project_name" >> $GITHUB_OUTPUT
             project_name=${project_name// /_} # replace spaces with underscores
             # make all lower cases
             project_name=$(echo $project_name | tr '[:upper:]' '[:lower:]')
@@ -42,4 +43,4 @@ jobs:
             commit-message: adding new project
             title: "Add ${{ steps.check-issue.outputs.PROJECT_NAME }}"
             body: "Add project to the projects folder. Fixes #${{ github.event.issue.number }}"
-            branch: main
+            branch: new-project
