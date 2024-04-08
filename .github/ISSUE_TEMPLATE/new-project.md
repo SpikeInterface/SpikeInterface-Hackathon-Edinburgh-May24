@@ -1,7 +1,7 @@
 ---
 name: New project
 about: Create a new Hackathon project
-title: "[NEW PROJECT]"
+title: "[NEW PROJECT]: "
 labels: ''
 assignees: ''
 

@@ -1,0 +1,47 @@
+name: Black formatting
+
+on:
+  issues:
+    types: opened
+
+jobs:
+  lint:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Check issue
+        id: check-issue
+        run: |
+          cd projects
+          if [[ ${{ github.event.issue.title }} == "[NEW PROJECT]:"* ]]; then
+            title=${{ github.event.issue.title }}
+            # remove the [NEW PROJECT]: part
+            project_name=${title#": "}
+            project_name=${project_name// /_} # replace spaces with underscores
+            # make all lower cases
+            project_name=$(echo $project_name | tr '[:upper:]' '[:lower:]')
+            # check if the project already exists
+            if [ -d $project_name ]; then
+              echo "Project already exists"
+              echo "PR_NEEDED=false" >> $GITHUB_OUTPUT
+              # creadte a new file with the project name.md and the issue body as content
+              echo "${{ github.event.issue.body }}" > $project_name/$project_name.md
+            else
+              echo "Project does not exist"
+              echo "PR_NEEDED=true" >> $GITHUB_OUTPUT
+            fi
+          else
+            echo "PR not needed"
+            echo "PR_NEEDED=false" >> $GITHUB_OUTPUT
+          fi
+
+      - name: Create PR
+        uses: peter-evans/create-pull-request@v5
+        if : ${{ steps.check-issue.outputs.PR_NEEDED == 'true' }}
+        with:
+            commit-message: adding new project
+            title: ${{ github.event.issue.title }}
+            body: "Add project to the projects folder. Fixes #${{ github.event.issue.number }}"
+            branch: main
