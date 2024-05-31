@@ -3,6 +3,8 @@
 ### Key Investigators
 
 * Alessio Buccino
+* Aurelien Wyngaard
+* Pierre Yger
 
 ## Project Description
 
